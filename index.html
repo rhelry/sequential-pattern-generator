@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://rhelry.github.io/sequential-pattern-generator/" />
+  <meta property="og:title" content="Sequential Pattern Generator" />
+  <meta property="og:description" content="This site arranges text, shapes, and images in patterns based on numerical sequences." />
+  <meta property="og:site_name" content="Sequential Pattern Generator" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/rhelry/sequential-pattern-generator/refs/heads/main/ogp-image.png" />
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/rhelry/sequential-pattern-generator/refs/heads/main/ogp-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  
+<style>
+:root{--bg0:#f0f0ee;--bg1:#e8e8e6;--bg2:#fff;--text1:#111;--text2:#666;--border:#d0d0ce;--accent:#1a73e8;--accent-bg:#e8f0fe;--accent-text:#1a73e8;--accent-border:#aac4f7;--shadow:rgba(0,0,0,.08)}
+.bm1{--bg0:#f0f0ee;--bg1:#e8e8e6;--bg2:#fff;--text1:#111;--text2:#666;--border:#d0d0ce;--shadow:rgba(0,0,0,.08)}
+.bm2{--bg0:#d8d8d4;--bg1:#ccccc8;--bg2:#e8e8e4;--text1:#111;--text2:#555;--border:#b8b8b4;--shadow:rgba(0,0,0,.1)}
+.bm3{--bg0:#2a2a2c;--bg1:#333335;--bg2:#3c3c3e;--text1:#e8e8e6;--text2:#999;--border:#4a4a4c;--shadow:rgba(0,0,0,.3)}
+.bm4{--bg0:#111112;--bg1:#1a1a1c;--bg2:#222224;--text1:#e0e0de;--text2:#777;--border:#333335;--shadow:rgba(0,0,0,.5)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,system-ui,sans-serif);font-size:11px;background:var(--bg0);color:var(--text1);transition:background .2s,color .2s}
+.app{display:flex;flex-direction:column;height:100vh;min-height:500px}
+.toolbar{display:flex;align-items:center;padding:0 12px;height:40px;background:var(--bg1);border-bottom:1px solid var(--border);flex-shrink:0}
+.toolbar-title{font-size:13px;font-weight:700;color:var(--text1);white-space:nowrap}
+.toolbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.tbtn{font-size:11px;width:28px;height:28px;border-radius:50%;border:.5px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tbtn:hover{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border)}
+.tbtn.lang{width:34px;border-radius:14px;font-size:10px;font-weight:600}
+.brightness-wrap{display:flex;align-items:center;gap:5px}
+.brightness-label{font-size:10px;color:var(--text2)}
+.bm-track{width:64px;height:28px;border-radius:14px;border:.5px solid var(--border);background:var(--bg2);display:flex;align-items:center;padding:2px;gap:1px}
+.bm-dot{flex:1;height:22px;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px}
+.bm-dot.active{background:var(--accent-bg);color:var(--accent-text)}
+.main{display:flex;flex:1;overflow:hidden}
+.panel{width:285px;flex-shrink:0;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:5px;background:var(--bg0);border-right:1px solid var(--border)}
+.canvas-area{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;background:var(--bg0);padding:12px}
+.sec{background:var(--bg1);border-radius:8px;padding:8px 10px}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.sec-hd.open{margin-bottom:6px}
+.sec-title{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.sec-arrow{font-size:10px;color:var(--text2);transition:transform .15s}
+.sec-body{display:none}.sec-body.open{display:block}
+.row{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.row label{flex:1;font-size:11px;color:var(--text2);white-space:nowrap}
+.row input[type=range]{flex:2;min-width:0;accent-color:var(--accent)}
+input.num{width:52px;font-size:11px;padding:2px 3px;border-radius:4px;border:.5px solid var(--border);background:var(--bg2);color:var(--text1);text-align:right}
+select,input[type=text]{width:100%;font-size:11px;padding:3px 6px;border-radius:6px;border:.5px solid var(--border);background:var(--bg2);color:var(--text1);margin-bottom:3px}
+.btn-row{display:flex;gap:4px;margin-top:2px}
+button{flex:1;font-size:11px;padding:5px 6px;border-radius:6px;border:.5px solid var(--border);background:var(--bg2);color:var(--text1);cursor:pointer}
+button:hover{opacity:.8}
+.dl{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border)}
+.preset-row{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:4px}
+.pbtn{font-size:10px;padding:2px 6px;border-radius:20px;border:.5px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;white-space:nowrap}
+.pbtn.active{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border)}
+.color-row{display:flex;gap:5px;align-items:center;margin-bottom:3px}
+.color-row label{font-size:11px;color:var(--text2);flex:1}
+input[type=color]{width:30px;height:24px;border:.5px solid var(--border);border-radius:4px;padding:1px;cursor:pointer;background:none}
+.tog{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.tog label{font-size:11px;color:var(--text2);flex:1}
+input[type=checkbox]{width:13px;height:13px;accent-color:var(--accent)}
+.dir-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:3px}
+.dbtn{font-size:10px;padding:3px 4px;border-radius:5px;border:.5px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;text-align:center;user-select:none}
+.dbtn.active{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border)}
+.fn-desc-box{background:var(--bg2);border-radius:6px;padding:6px 8px;margin-bottom:5px;border:.5px solid var(--border)}
+.fn-desc-text{font-size:10px;color:var(--text2);line-height:1.5;margin-bottom:4px}
+.fn-formula-canvas{display:block;width:100%;height:44px;border-radius:4px}
+.upload-area{border:1.5px dashed var(--border);border-radius:6px;padding:7px;text-align:center;cursor:pointer;font-size:10px;color:var(--text2)}
+.upload-area.has-file{border-color:var(--accent-border);color:var(--accent-text)}
+.sub-label{font-size:10px;font-weight:600;color:var(--text2);margin:4px 0 2px}
+.ratio-custom{display:none;flex-direction:row;gap:4px;align-items:center;margin-bottom:4px}
+.ratio-custom input{width:44px;font-size:11px;padding:2px 4px;border-radius:4px;border:.5px solid var(--border);background:var(--bg2);color:var(--text1);text-align:center}
+.ratio-custom span{color:var(--text2)}
+.info-text{font-size:10px;color:var(--text2);margin-top:2px}
+.grid-seq{display:none;margin-top:4px;padding:6px;background:var(--bg2);border-radius:6px}
+.grid-seq.open{display:block}
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
+.help-overlay.open{display:flex}
+.help-box{background:var(--bg1);border-radius:12px;padding:20px 24px;max-width:520px;width:90%;max-height:80vh;overflow-y:auto;color:var(--text1)}
+.help-box h2{font-size:14px;font-weight:700;margin-bottom:12px}
+.help-box h3{font-size:11px;font-weight:600;color:var(--accent-text);margin:10px 0 4px;text-transform:uppercase}
+.help-box p{font-size:11px;line-height:1.6;color:var(--text2);margin-bottom:6px}
+.help-close{float:right;font-size:18px;cursor:pointer;color:var(--text2);background:none;border:none;padding:0;line-height:1}
+/* SVG color picker */
+.svg-color-list{margin-top:4px;display:flex;flex-direction:column;gap:4px}
+.svg-color-item{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text2);padding:3px 5px;border-radius:4px;background:var(--bg2);border:.5px solid var(--border)}
+.svg-color-item input[type=color]{width:28px;height:22px;padding:1px;border-radius:3px;border:.5px solid var(--border);cursor:pointer;flex-shrink:0}
+.svg-color-swatch{width:16px;height:16px;border-radius:3px;border:.5px solid var(--border);flex-shrink:0}
+.svg-color-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;font-size:10px}
+/* Gradient UI */
+.grad-stops{display:flex;flex-direction:column;gap:4px;margin-bottom:4px}
+.grad-stop{display:flex;align-items:center;gap:5px;padding:3px 5px;border-radius:5px;background:var(--bg2);border:.5px solid var(--border)}
+.grad-stop input[type=color]{width:28px;height:22px;padding:1px;border-radius:3px;border:.5px solid var(--border);cursor:pointer;flex-shrink:0}
+.grad-stop input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+.grad-stop .pos-num{width:36px;font-size:10px;padding:1px 2px;border-radius:3px;border:.5px solid var(--border);background:var(--bg0);color:var(--text1);text-align:right}
+.grad-stop .rm{width:18px;height:18px;border-radius:50%;font-size:11px;padding:0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:none;border:.5px solid var(--border);color:var(--text2);cursor:pointer}
+.grad-preview{height:18px;border-radius:4px;margin-bottom:4px;border:.5px solid var(--border)}
+.grad-add{font-size:10px;padding:3px 8px;border-radius:12px;border:.5px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;margin-bottom:4px}
+</style>
+</head><body class="bm1">
+<div class="app">
+<div class="toolbar">
+  <span class="toolbar-title">Sequential Pattern Generator</span>
+  <div class="toolbar-right">
+    <button class="tbtn" onclick="toggleHelp()">?</button>
+    <button class="tbtn lang" onclick="toggleLang()" id="btn-lang">EN</button>
+    <div class="brightness-wrap">
+      <span class="brightness-label" id="brightness-lbl">明るさ</span>
+      <div class="bm-track">
+        <div class="bm-dot active" id="bm-1" onclick="setBM(1)">☀</div>
+        <div class="bm-dot" id="bm-2" onclick="setBM(2)">◑</div>
+        <div class="bm-dot" id="bm-3" onclick="setBM(3)">◑</div>
+        <div class="bm-dot" id="bm-4" onclick="setBM(4)">🌙</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="main">
+<div class="panel">
+
+<!-- CANVAS SIZE -->
+<div class="sec">
+  <div class="sec-hd open" onclick="toggleSec(this)"><span class="sec-title" id="t-canvas">キャンバスサイズ</span><span class="sec-arrow">▾</span></div>
+  <div class="sec-body open">
+    <div class="sub-label" id="t-ratio">比率</div>
+    <div class="preset-row">
+      <button class="pbtn ratio-btn" onclick="setRatio('1:1',this)">1:1</button>
+      <button class="pbtn ratio-btn active" onclick="setRatio('1:rt2',this)">1:√2</button>
+      <button class="pbtn ratio-btn" onclick="setRatio('3:4',this)">3:4</button>
+      <button class="pbtn ratio-btn" onclick="setRatio('16:9',this)">16:9</button>
+      <button class="pbtn ratio-btn" onclick="setRatio('custom',this)">a:b</button>
+    </div>
+    <div class="ratio-custom" id="ratio-custom-box">
+      <input type="number" id="ratio-a" min="1" max="100" value="1" oninput="onCustomRatio()"><span>:</span>
+      <input type="number" id="ratio-b" min="1" max="100" value="1" oninput="onCustomRatio()">
+    </div>
+    <div class="row"><label id="t-w">幅 W</label><input type="range" id="cvs-w" min="100" max="2000" value="600" step="1" oninput="syncN(this,'cvs-w-n');onWChange()"><input class="num" id="cvs-w-n" type="number" min="100" max="2000" value="600" onchange="syncR(this,'cvs-w');onWChange()"></div>
+    <div class="row"><label id="t-h">高さ H</label><input type="range" id="cvs-h" min="100" max="2000" value="849" step="1" oninput="syncN(this,'cvs-h-n');onHChange()"><input class="num" id="cvs-h-n" type="number" min="100" max="2000" value="849" onchange="syncR(this,'cvs-h');onHChange()"></div>
+    <div class="info-text" id="canvas-info">600×849px</div>
+    <div class="sub-label" id="t-pscale">プレビュー倍率</div>
+    <div class="row"><label></label><input type="range" id="preview-scale" min="0.1" max="2" value="0.7" step="0.05" oninput="syncN(this,'preview-scale-n');applyPreviewScale()"><input class="num" id="preview-scale-n" type="number" min="0.1" max="2" step="0.05" value="0.7" onchange="syncR(this,'preview-scale');applyPreviewScale()"></div>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="sec">
+  <div class="sec-hd open" onclick="toggleSec(this)"><span class="sec-title" id="t-grid">グリッド設定</span><span class="sec-arrow">▾</span></div>
+  <div class="sec-body open">
+    <div class="row"><label id="t-cols">列数</label><input type="range" id="cols" min="2" max="20" value="13" step="1" oninput="syncN(this,'cols-n');draw()"><input class="num" id="cols-n" type="number" min="2" max="20" value="13" onchange="syncR(this,'cols');draw()"></div>
+    <div class="tog"><label id="t-cols-seq">列数を数列制御</label><input type="checkbox" id="cols-seq-on" onchange="toggleGridSeq('col')"></div>
+    <div class="grid-seq" id="cols-seq-body">
+      <div class="row"><label id="t-fn">関数</label><select id="cols-seq-fn" onchange="draw()" style="margin-bottom:0"></select></div>
+      <div class="row"><label id="t-dr">公差/公比</label><input type="range" id="cols-seq-p" min="0.1" max="4" value="1" step="0.05" oninput="syncN(this,'cols-seq-pn');draw()"><input class="num" id="cols-seq-pn" type="number" min="0.1" max="4" step="0.05" value="1" onchange="syncR(this,'cols-seq-p');draw()"></div>
+      <div class="tog"><label id="t-sym">対称</label><input type="checkbox" id="cols-seq-sym" checked onchange="draw()"></div>
+    </div>
+    <div class="row" style="margin-top:4px"><label id="t-rows">行数</label><input type="range" id="rows" min="2" max="20" value="11" step="1" oninput="syncN(this,'rows-n');draw()"><input class="num" id="rows-n" type="number" min="2" max="20" value="11" onchange="syncR(this,'rows');draw()"></div>
+    <div class="tog"><label id="t-rows-seq">行数を数列制御</label><input type="checkbox" id="rows-seq-on" onchange="toggleGridSeq('row')"></div>
+    <div class="grid-seq" id="rows-seq-body">
+      <div class="row"><label id="t-fn2">関数</label><select id="rows-seq-fn" onchange="draw()" style="margin-bottom:0"></select></div>
+      <div class="row"><label id="t-dr2">公差/公比</label><input type="range" id="rows-seq-p" min="0.1" max="4" value="1" step="0.05" oninput="syncN(this,'rows-seq-pn');draw()"><input class="num" id="rows-seq-pn" type="number" min="0.1" max="4" step="0.05" value="1" onchange="syncR(this,'rows-seq-p');draw()"></div>
+      <div class="tog"><label id="t-sym2">対称</label><input type="checkbox" id="rows-seq-sym" checked onchange="draw()"></div>
+    </div>
+    <div class="row" style="margin-top:4px"><label id="t-repx">横繰り返し</label><input type="range" id="rep-x" min="1" max="8" value="1" step="1" oninput="syncN(this,'rep-x-n');draw()"><input class="num" id="rep-x-n" type="number" min="1" max="8" value="1" onchange="syncR(this,'rep-x');draw()"></div>
+    <div class="row"><label id="t-repy">縦繰り返し</label><input type="range" id="rep-y" min="1" max="8" value="1" step="1" oninput="syncN(this,'rep-y-n');draw()"><input class="num" id="rep-y-n" type="number" min="1" max="8" value="1" onchange="syncR(this,'rep-y');draw()"></div>
+  </div>
+</div>
+
+<!-- SIZE FN -->
+<div class="sec">
+  <div class="sec-hd open" onclick="toggleSec(this)"><span class="sec-title" id="t-sizefn">サイズ関数</span><span class="sec-arrow">▾</span></div>
+  <div class="sec-body open">
+    <select id="size-fn" onchange="onFnChange()"></select>
+    <div class="fn-desc-box" id="fn-desc-box" style="display:none">
+      <div class="fn-desc-text" id="fn-desc"></div>
+      <canvas class="fn-formula-canvas" id="fn-formula-canvas" height="44"></canvas>
+    </div>
+    <div class="row"><label id="t-strength">強度</label><input type="range" id="strength" min="0" max="8" value="1" step="0.1" oninput="syncN(this,'strength-n');draw()"><input class="num" id="strength-n" type="number" min="0" max="8" step="0.1" value="1" onchange="syncR(this,'strength');draw()"></div>
+    <div class="row"><label id="t-maxcell">最大セル比</label><input type="range" id="max-size" min="0.1" max="1" value="1" step="0.01" oninput="syncN(this,'max-size-n');draw()"><input class="num" id="max-size-n" type="number" min="0.1" max="1" step="0.01" value="1" onchange="syncR(this,'max-size');draw()"></div>
+    <div id="p-arithmetic" style="display:none"><div class="row"><label id="t-diff">公差 d</label><input type="range" id="arith-d" min="0.01" max="3" value="0.5" step="0.01" oninput="syncN(this,'arith-d-n');draw()"><input class="num" id="arith-d-n" type="number" min="0.01" max="3" step="0.01" value="0.5" onchange="syncR(this,'arith-d');draw()"></div></div>
+    <div id="p-geometric" style="display:block">
+      <div class="row"><label id="t-ratio-r">公比 r</label><input type="range" id="geo-r" min="0.1" max="5" value="1.618" step="0.001" oninput="syncN(this,'geo-r-n');draw()"><input class="num" id="geo-r-n" type="number" min="0.1" max="5" step="0.001" value="1.618" onchange="syncR(this,'geo-r');draw()"></div>
+      <div class="preset-row"><button class="pbtn" onclick="setV('geo-r','geo-r-n',1.618)">φ</button><button class="pbtn" onclick="setV('geo-r','geo-r-n',2.414)">δ</button><button class="pbtn" onclick="setV('geo-r','geo-r-n',2)">×2</button><button class="pbtn" onclick="setV('geo-r','geo-r-n',3)">×3</button></div>
+    </div>
+    <div id="p-harmonic" style="display:none"><div class="row"><label id="t-hdiff">分母公差</label><input type="range" id="harm-d" min="0.1" max="5" value="1" step="0.1" oninput="syncN(this,'harm-d-n');draw()"><input class="num" id="harm-d-n" type="number" min="0.1" max="5" step="0.1" value="1" onchange="syncR(this,'harm-d');draw()"></div></div>
+    <div id="p-power" style="display:none">
+      <div class="row"><label id="t-base">底 a</label><input type="range" id="pw-a" min="1.01" max="10" value="2" step="0.01" oninput="syncN(this,'pw-a-n');draw()"><input class="num" id="pw-a-n" type="number" min="1.01" max="10" step="0.01" value="2" onchange="syncR(this,'pw-a');draw()"></div>
+      <div class="row"><label id="t-exp">指数 n</label><input type="range" id="pw-n" min="0.1" max="5" value="1" step="0.1" oninput="syncN(this,'pw-n-n');draw()"><input class="num" id="pw-n-n" type="number" min="0.1" max="5" step="0.1" value="1" onchange="syncR(this,'pw-n');draw()"></div>
+    </div>
+    <div id="p-custom" style="display:none">
+      <div style="font-size:10px;color:var(--text2);margin-bottom:2px" id="t-custom-hint">t: 0=端, 1=中心</div>
+      <input type="text" id="cex-w" value="Math.pow(t,2)"><input type="text" id="cex-h" value="Math.pow(t,2)">
+      <button onclick="draw()" id="t-apply">適用</button>
+    </div>
+    <div class="sub-label" id="t-dir">適用方向</div>
+    <div class="dir-grid">
+      <div></div><div class="dbtn" id="dir-top" onclick="toggleDir('top',this)">上</div><div></div>
+      <div class="dbtn" id="dir-left" onclick="toggleDir('left',this)">左</div>
+      <div class="dbtn active" id="dir-all" onclick="toggleDir('all',this)">全</div>
+      <div class="dbtn" id="dir-right" onclick="toggleDir('right',this)">右</div>
+      <div></div><div class="dbtn" id="dir-bottom" onclick="toggleDir('bottom',this)">下</div><div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAD/OFFSET -->
+<div class="sec">
+  <div class="sec-hd" onclick="toggleSec(this)"><span class="sec-title" id="t-pad">余白・オフセット</span><span class="sec-arrow" style="transform:rotate(-90deg)">▾</span></div>
+  <div class="sec-body">
+    <select id="aspect-mode" onchange="draw()"></select>
+    <div class="row"><label id="t-padx">横余白</label><input type="range" id="pad-x" min="-0.5" max="0.45" value="0" step="0.005" oninput="syncN(this,'pad-x-n');draw()"><input class="num" id="pad-x-n" type="number" min="-0.5" max="0.45" step="0.005" value="0" onchange="syncR(this,'pad-x');draw()"></div>
+    <div class="row"><label id="t-pady">縦余白</label><input type="range" id="pad-y" min="-0.5" max="0.45" value="0" step="0.005" oninput="syncN(this,'pad-y-n');draw()"><input class="num" id="pad-y-n" type="number" min="-0.5" max="0.45" step="0.005" value="0" onchange="syncR(this,'pad-y');draw()"></div>
+    <div class="row"><label id="t-offx">横オフセット</label><input type="range" id="off-x" min="-1" max="1" value="0" step="0.01" oninput="syncN(this,'off-x-n');draw()"><input class="num" id="off-x-n" type="number" min="-1" max="1" step="0.01" value="0" onchange="syncR(this,'off-x');draw()"></div>
+    <div class="row"><label id="t-offy">縦オフセット</label><input type="range" id="off-y" min="-1" max="1" value="0" step="0.01" oninput="syncN(this,'off-y-n');draw()"><input class="num" id="off-y-n" type="number" min="-1" max="1" step="0.01" value="0" onchange="syncR(this,'off-y');draw()"></div>
+  </div>
+</div>
+
+<!-- ELEMENT -->
+<div class="sec">
+  <div class="sec-hd open" onclick="toggleSec(this)"><span class="sec-title" id="t-element">要素</span><span class="sec-arrow">▾</span></div>
+  <div class="sec-body open">
+    <select id="shape" onchange="onShapeChange()"></select>
+    <div id="char-area" style="display:none">
+      <input type="text" id="char" value="0" maxlength="8" oninput="draw()">
+      <select id="font-family" onchange="draw()">
+        <optgroup label="Sans-serif"><option value="Arial Black,Arial,sans-serif">Arial Black</option><option value="Impact,fantasy">Impact</option><option value="Verdana,sans-serif">Verdana</option><option value="'Helvetica Neue',Helvetica,sans-serif">Helvetica</option><option value="Trebuchet MS,sans-serif">Trebuchet MS</option></optgroup>
+        <optgroup label="Serif"><option value="Georgia,serif">Georgia</option><option value="'Times New Roman',serif">Times New Roman</option><option value="Palatino,serif">Palatino</option></optgroup>
+        <optgroup label="Mono"><option value="'Courier New',monospace">Courier New</option></optgroup>
+        <optgroup label="Other"><option value="'Comic Sans MS',cursive">Comic Sans MS</option></optgroup>
+        <optgroup label="日本語"><option value="'Hiragino Kaku Gothic Pro',sans-serif">ヒラギノ角ゴ</option><option value="'Hiragino Mincho Pro',serif">ヒラギノ明朝</option><option value="'Yu Gothic','游ゴシック',sans-serif">游ゴシック</option><option value="'Yu Mincho','游明朝',serif">游明朝</option><option value="'MS Gothic','ＭＳ ゴシック',sans-serif">MSゴシック</option><option value="'MS Mincho','ＭＳ 明朝',serif">MS明朝</option><option value="'Noto Sans JP',sans-serif">Noto Sans JP</option><option value="'Noto Serif JP',serif">Noto Serif JP</option></optgroup>
+      </select>
+      <div class="tog"><label id="t-bold">太字</label><input type="checkbox" id="font-bold" checked onchange="draw()"></div>
+    </div>
+    <div id="upload-area" style="display:none">
+      <div class="upload-area" id="drop-zone" onclick="$('file-input').click()"><div id="drop-label">クリックまたはドロップ</div></div>
+      <input type="file" id="file-input" style="display:none" accept="image/png,image/jpeg,image/gif,image/webp,.svg,image/svg+xml" onchange="onFileChange(this)">
+      <div id="svg-debug" style="display:none;font-size:9px;color:var(--text2);margin-top:3px;word-break:break-all"></div>
+      <!-- SVG COLOR PANEL -->
+      <div id="svg-colors-area" style="display:none;margin-top:6px">
+        <div class="sub-label" id="t-svgcolors">SVG色変更</div>
+        <div class="svg-color-list" id="svg-color-list"></div>
+        <button onclick="resetSvgColors()" style="margin-top:5px;font-size:10px" id="t-reset">リセット</button>
+      </div>
+    </div>
+
+    <!-- FOREGROUND COLOR / GRADIENT -->
+    <div id="fg-section">
+      <div class="sub-label" id="t-fgmode-lbl">前景色モード</div>
+      <div class="preset-row" id="fgmode-btns">
+        <button class="pbtn active" id="fgm-solid" onclick="setFgMode('solid',this)" id="t-fgm-solid">単色</button>
+        <button class="pbtn" id="fgm-grad" onclick="setFgMode('gradient',this)" id="t-fgm-grad">グラデーション</button>
+      </div>
+      <!-- SOLID -->
+      <div id="fg-solid-area" class="color-row"><label id="t-fg">前景色</label><input type="color" id="fg-color" value="#1a1a1a" oninput="draw()"></div>
+      <!-- GRADIENT -->
+      <div id="fg-grad-area" style="display:none">
+        <div class="sub-label" id="t-grad-axis-lbl">グラデーション軸</div>
+        <div class="preset-row">
+          <button class="pbtn active" id="gax-col" onclick="setGradAxis('col',this)" id="t-gax-col">列（横）</button>
+          <button class="pbtn" id="gax-row" onclick="setGradAxis('row',this)" id="t-gax-row">行（縦）</button>
+          <button class="pbtn" id="gax-radial" onclick="setGradAxis('radial',this)" id="t-gax-radial">中心距離</button>
+          <button class="pbtn" id="gax-size" onclick="setGradAxis('size',this)" id="t-gax-size">セルサイズ</button>
+          <button class="pbtn" id="gax-diag" onclick="setGradAxis('diag',this)" id="t-gax-diag">対角</button>
+        </div>
+        <div class="sub-label" id="t-grad-stops-lbl">カラーストップ</div>
+        <div class="grad-preview" id="grad-preview"></div>
+        <div class="grad-stops" id="grad-stops-list"></div>
+        <button class="grad-add" onclick="addGradStop()" id="t-grad-add">＋ ストップを追加</button>
+        <div class="tog" style="margin-top:2px">
+          <label id="t-grad-repeat">繰り返し</label>
+          <input type="checkbox" id="grad-repeat" onchange="draw()">
+        </div>
+        <div class="row">
+          <label id="t-grad-smooth">スムース</label>
+          <input type="range" id="grad-smooth" min="0" max="1" value="1" step="0.05" oninput="syncN(this,'grad-smooth-n');draw()">
+          <input class="num" id="grad-smooth-n" type="number" min="0" max="1" step="0.05" value="1" onchange="syncR(this,'grad-smooth');draw()">
+        </div>
+      </div>
+    </div>
+
+    <div class="color-row"><label id="t-bg">背景色</label><input type="color" id="bg-color" value="#f8f7f4" oninput="draw()"></div>
+    <div class="tog" id="invert-row" style="display:none"><label id="t-invert">色反転</label><input type="checkbox" id="invert" onchange="draw()"></div>
+  </div>
+</div>
+
+<!-- SAVE -->
+<div class="sec">
+  <div class="sec-hd open" onclick="toggleSec(this)"><span class="sec-title" id="t-save">保存</span><span class="sec-arrow">▾</span></div>
+  <div class="sec-body open">
+    <div class="row"><label id="t-pngscale">PNG倍率</label><input type="range" id="png-scale" min="0.25" max="4" value="1" step="0.25" oninput="syncN(this,'png-scale-n');updateCanvasInfo()"><input class="num" id="png-scale-n" type="number" min="0.25" max="4" step="0.25" value="1" onchange="syncR(this,'png-scale');updateCanvasInfo()"></div>
+    <div class="info-text" id="png-size-info"></div>
+    <div class="btn-row" style="margin-top:6px">
+      <button class="dl" onclick="downloadSVG()" id="t-savesvg">SVG保存</button>
+      <button class="dl" onclick="downloadPNG()" id="t-savepng">PNG保存</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /panel -->
+<div class="canvas-area">
+  <svg id="preview" xmlns="http://www.w3.org/2000/svg" style="display:block;box-shadow:0 4px 20px var(--shadow)"></svg>
+</div>
+</div>
+</div>
+
+<div class="help-overlay" id="help-overlay" onclick="closeHelp(event)">
+<div class="help-box">
+  <button class="help-close" onclick="toggleHelp()">✕</button>
+  <h2 id="help-title">使い方</h2>
+  <div id="help-content"></div>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let uploadedDataUrl=null,uploadedSvgDoc=null;
+let activeDir=new Set(['all']);
+let CVW=600,CVH=849,currentRatio='1:rt2',customRatioA=1,customRatioB=1;
+let isEn=false;
+let svgColorMap=new Map();
+let fgMode='solid'; // 'solid' | 'gradient'
+let gradAxis='col';  // 'col'|'row'|'radial'|'size'|'diag'
+// gradient stops: [{pos:0..1, color:'#rrggbb'}, ...]
+let gradStops=[{pos:0,color:'#1a1a1a'},{pos:1,color:'#c0c0c0'}];
+// cache of per-cell weights for gradient mapping
+let lastColW=null,lastRowH=null,lastCols=0,lastRows=0;
+
+// ========== LOCALIZATION ==========
+const L={
+  ja:{'brightness-lbl':'明るさ','t-canvas':'キャンバスサイズ','t-ratio':'比率','t-w':'幅 W','t-h':'高さ H','t-pscale':'プレビュー倍率',
+      't-grid':'グリッド設定','t-cols':'列数','t-cols-seq':'列数を数列制御','t-fn':'関数','t-dr':'公差/公比','t-sym':'対称',
+      't-rows':'行数','t-rows-seq':'行数を数列制御','t-fn2':'関数','t-dr2':'公差/公比','t-sym2':'対称',
+      't-repx':'横繰り返し','t-repy':'縦繰り返し','t-sizefn':'サイズ関数','t-strength':'強度','t-maxcell':'最大セル比',
+      't-diff':'公差 d','t-ratio-r':'公比 r','t-hdiff':'分母公差','t-base':'底 a','t-exp':'指数 n',
+      't-custom-hint':'t: 0=端, 1=中心','t-apply':'適用','t-dir':'適用方向',
+      't-pad':'余白・オフセット','t-padx':'横余白','t-pady':'縦余白','t-offx':'横オフセット','t-offy':'縦オフセット',
+      't-element':'要素','t-bold':'太字','t-svgcolors':'SVG色変更','t-reset':'リセット',
+      't-fgmode-lbl':'前景色モード','t-fg':'前景色',
+      't-fgm-solid':'単色','t-fgm-grad':'グラデーション',
+      't-grad-axis-lbl':'グラデーション軸',
+      't-gax-col':'列（横）','t-gax-row':'行（縦）','t-gax-radial':'中心距離','t-gax-size':'セルサイズ','t-gax-diag':'対角',
+      't-grad-stops-lbl':'カラーストップ','t-grad-add':'＋ ストップを追加',
+      't-grad-repeat':'繰り返し','t-grad-smooth':'スムース',
+      't-bg':'背景色','t-invert':'色反転','t-save':'保存','t-pngscale':'PNG倍率',
+      't-savesvg':'SVG保存','t-savepng':'PNG保存','drop-label':'クリックまたはドロップ','help-title':'使い方',
+      'dir-top':'上','dir-left':'左','dir-all':'全','dir-right':'右','dir-bottom':'下'},
+  en:{'brightness-lbl':'Brightness','t-canvas':'Canvas Size','t-ratio':'Ratio','t-w':'Width W','t-h':'Height H','t-pscale':'Preview Scale',
+      't-grid':'Grid','t-cols':'Cols','t-cols-seq':'Seq-ctrl Cols','t-fn':'Fn','t-dr':'d / r','t-sym':'Sym',
+      't-rows':'Rows','t-rows-seq':'Seq-ctrl Rows','t-fn2':'Fn','t-dr2':'d / r','t-sym2':'Sym',
+      't-repx':'Rep X','t-repy':'Rep Y','t-sizefn':'Size Function','t-strength':'Strength','t-maxcell':'Max Cell',
+      't-diff':'Diff d','t-ratio-r':'Ratio r','t-hdiff':'Denom d','t-base':'Base a','t-exp':'Exp n',
+      't-custom-hint':'t: 0=edge, 1=center','t-apply':'Apply','t-dir':'Direction',
+      't-pad':'Padding & Offset','t-padx':'Pad X','t-pady':'Pad Y','t-offx':'Off X','t-offy':'Off Y',
+      't-element':'Element','t-bold':'Bold','t-svgcolors':'SVG Colors','t-reset':'Reset',
+      't-fgmode-lbl':'Foreground Mode','t-fg':'Foreground',
+      't-fgm-solid':'Solid','t-fgm-grad':'Gradient',
+      't-grad-axis-lbl':'Gradient Axis',
+      't-gax-col':'Column (X)','t-gax-row':'Row (Y)','t-gax-radial':'Radial','t-gax-size':'Cell Size','t-gax-diag':'Diagonal',
+      't-grad-stops-lbl':'Color Stops','t-grad-add':'＋ Add Stop',
+      't-grad-repeat':'Repeat','t-grad-smooth':'Smooth',
+      't-bg':'Background','t-invert':'Invert','t-save':'Export','t-pngscale':'PNG Scale',
+      't-savesvg':'Save SVG','t-savepng':'Save PNG','drop-label':'Click or Drop','help-title':'How to Use',
+      'dir-top':'Top','dir-left':'Left','dir-all':'All','dir-right':'Right','dir-bottom':'Bottom'}
+};
+const SEQ_FN_OPT={ja:[{v:'geometric',t:'等比数列'},{v:'arithmetic',t:'等差数列'},{v:'harmonic',t:'調和数列'},{v:'power',t:'(1/a)^n 数列'},{v:'fibonacci',t:'フィボナッチ'},{v:'converge',t:'中心収束'},{v:'custom',t:'カスタム式'}],en:[{v:'geometric',t:'Geometric'},{v:'arithmetic',t:'Arithmetic'},{v:'harmonic',t:'Harmonic'},{v:'power',t:'(1/a)^n Series'},{v:'fibonacci',t:'Fibonacci'},{v:'converge',t:'Converge'},{v:'custom',t:'Custom'}]};
+const SUBSEQ_OPT={ja:[{v:'arithmetic',t:'等差'},{v:'geometric',t:'等比'},{v:'fibonacci',t:'フィボナッチ'}],en:[{v:'arithmetic',t:'Arith.'},{v:'geometric',t:'Geom.'},{v:'fibonacci',t:'Fib.'}]};
+const SHAPE_OPT={ja:[{v:'ellipse',t:'楕円'},{v:'char',t:'文字'},{v:'rect',t:'矩形'},{v:'diamond',t:'ダイヤモンド'},{v:'image',t:'画像（PNG/JPG）'},{v:'svg',t:'SVGファイル'}],en:[{v:'ellipse',t:'Ellipse'},{v:'char',t:'Character'},{v:'rect',t:'Rectangle'},{v:'diamond',t:'Diamond'},{v:'image',t:'Image (PNG/JPG)'},{v:'svg',t:'SVG File'}]};
+const ASPECT_OPT={ja:[{v:'cell',t:'セルに合わせる'},{v:'fit-min',t:'短辺基準'},{v:'fit-max',t:'長辺基準'}],en:[{v:'cell',t:'Fit Cell'},{v:'fit-min',t:'Min Side'},{v:'fit-max',t:'Max Side'}]};
+function buildSel(id,opts){const el=$(id),cur=el.value;el.innerHTML=opts.map(o=>`<option value="${o.v}">${o.t}</option>`).join('');if(opts.find(o=>o.v===cur))el.value=cur;}
+function applyLang(){
+  const d=L[isEn?'en':'ja'];
+  Object.entries(d).forEach(([id,txt])=>{const el=$(id);if(el)el.textContent=txt;});
+  buildSel('size-fn',SEQ_FN_OPT[isEn?'en':'ja']);
+  buildSel('cols-seq-fn',SUBSEQ_OPT[isEn?'en':'ja']);
+  buildSel('rows-seq-fn',SUBSEQ_OPT[isEn?'en':'ja']);
+  buildSel('shape',SHAPE_OPT[isEn?'en':'ja']);
+  buildSel('aspect-mode',ASPECT_OPT[isEn?'en':'ja']);
+  $('btn-lang').textContent=isEn?'JA':'EN';
+  if($('help-overlay').classList.contains('open'))$('help-content').innerHTML=HELP[isEn?'en':'ja'];
+  onFnChange(); onShapeChange();
+}
+function toggleLang(){isEn=!isEn;applyLang();}
+const HELP={ja:`<h3>概要</h3><p>文字・図形・画像を数列的なルールでグリッド上に配置するツールです。</p><h3>グラデーション</h3><p>前景色モードで「グラデーション」を選ぶと、列・行・中心距離・セルサイズ・対角などの軸に沿ってカラーマップが適用されます。ストップを追加・削除して自由に配色できます。</p><h3>SVG色変更</h3><p>SVGファイルをアップロードすると検出した色ごとにカラーピッカーが表示されます。</p>`,en:`<h3>Overview</h3><p>Place shapes, characters, or images on a grid where cell sizes follow mathematical sequences.</p><h3>Gradient</h3><p>Switch foreground mode to Gradient to apply a color map along column, row, radial, cell-size, or diagonal axes. Add/remove stops freely.</p><h3>SVG Colors</h3><p>When an SVG file is uploaded, color pickers appear for each detected color.</p>`};
+function toggleHelp(){$('help-overlay').classList.toggle('open');$('help-content').innerHTML=HELP[isEn?'en':'ja'];}
+function closeHelp(e){if(e.target===$('help-overlay'))toggleHelp();}
+function setBM(n){document.body.className='bm'+n;for(let i=1;i<=4;i++)$('bm-'+i).classList.toggle('active',i===n);drawFormula();}
+function toggleSec(hd){hd.classList.toggle('open');const b=hd.nextElementSibling;b.classList.toggle('open');const a=hd.querySelector('.sec-arrow');if(a)a.style.transform=b.classList.contains('open')?'':'rotate(-90deg)';}
+function toggleGridSeq(axis){const on=$(axis==='col'?'cols-seq-on':'rows-seq-on').checked;$(axis==='col'?'cols-seq-body':'rows-seq-body').classList.toggle('open',on);draw();}
+
+// ========== CANVAS RATIO ==========
+function getRatio(){if(currentRatio==='1:1')return[1,1];if(currentRatio==='1:rt2')return[1,Math.SQRT2];if(currentRatio==='3:4')return[3,4];if(currentRatio==='16:9')return[16,9];return[customRatioA||1,customRatioB||1];}
+function setRatio(m,btn){document.querySelectorAll('.ratio-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentRatio=m;$('ratio-custom-box').style.display=m==='custom'?'flex':'none';enforceRatioFromW();}
+function enforceRatioFromW(){const[rw,rh]=getRatio(),w=parseInt($('cvs-w').value)||600;const h=Math.min(2000,Math.max(100,Math.round(w*rh/rw)));$('cvs-h').value=h;$('cvs-h-n').value=h;CVW=w;CVH=h;updateCanvasInfo();applyPreviewScale();draw();}
+function enforceRatioFromH(){const[rw,rh]=getRatio(),h=parseInt($('cvs-h').value)||849;const w=Math.min(2000,Math.max(100,Math.round(h*rw/rh)));$('cvs-w').value=w;$('cvs-w-n').value=w;CVW=w;CVH=h;updateCanvasInfo();applyPreviewScale();draw();}
+function onWChange(){CVW=parseInt($('cvs-w').value)||600;CVH=parseInt($('cvs-h').value)||849;enforceRatioFromW();}
+function onHChange(){CVW=parseInt($('cvs-w').value)||600;CVH=parseInt($('cvs-h').value)||849;enforceRatioFromH();}
+function onCustomRatio(){customRatioA=parseFloat($('ratio-a').value)||1;customRatioB=parseFloat($('ratio-b').value)||1;enforceRatioFromW();}
+function updateCanvasInfo(){const s=parseFloat($('png-scale').value)||1;$('canvas-info').textContent=`${CVW}×${CVH}px`;$('png-size-info').textContent=`${isEn?'Output':'出力'}: ${Math.round(CVW*s)}×${Math.round(CVH*s)}px`;}
+function applyPreviewScale(){const sc=parseFloat($('preview-scale').value)||0.7;$('preview').setAttribute('width',Math.round(CVW*sc));$('preview').setAttribute('height',Math.round(CVH*sc));$('preview').setAttribute('viewBox',`0 0 ${CVW} ${CVH}`);}
+function syncN(r,id){$(id).value=r.value}
+function syncR(n,id){$(id).value=n.value}
+function setV(rid,nid,v){$(rid).value=v;$(nid).value=v;draw();}
+function toggleDir(d,el){if(activeDir.has(d))activeDir.delete(d);else activeDir.add(d);el.classList.toggle('active');draw();}
+
+// ========== GRADIENT UI ==========
+function setFgMode(mode,btn){
+  fgMode=mode;
+  document.querySelectorAll('#fgmode-btns .pbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  $('fg-solid-area').style.display=mode==='solid'?'flex':'none';
+  $('fg-grad-area').style.display=mode==='gradient'?'block':'none';
+  draw();
+}
+function setGradAxis(axis,btn){
+  gradAxis=axis;
+  document.querySelectorAll('#fg-grad-area .preset-row .pbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  draw();
+}
+function renderGradStopUI(){
+  const list=$('grad-stops-list');list.innerHTML='';
+  const sorted=[...gradStops].sort((a,b)=>a.pos-b.pos);
+  sorted.forEach((stop,i)=>{
+    const item=document.createElement('div');item.className='grad-stop';
+    const pick=document.createElement('input');pick.type='color';pick.value=stop.color;
+    pick.oninput=()=>{gradStops[gradStops.indexOf(stop)].color=pick.value;updateGradPreview();draw();};
+    const slider=document.createElement('input');slider.type='range';slider.min=0;slider.max=1;slider.step=0.01;slider.value=stop.pos;
+    const posNum=document.createElement('input');posNum.className='pos-num';posNum.type='number';posNum.min=0;posNum.max=1;posNum.step=0.01;posNum.value=stop.pos.toFixed(2);
+    const syncPos=v=>{stop.pos=Math.max(0,Math.min(1,parseFloat(v)||0));slider.value=stop.pos;posNum.value=stop.pos.toFixed(2);updateGradPreview();draw();};
+    slider.oninput=()=>syncPos(slider.value);
+    posNum.onchange=()=>syncPos(posNum.value);
+    const rm=document.createElement('button');rm.className='rm';rm.textContent='×';
+    rm.onclick=()=>{if(gradStops.length>2){gradStops.splice(gradStops.indexOf(stop),1);renderGradStopUI();updateGradPreview();draw();}};
+    item.append(pick,slider,posNum,rm);list.appendChild(item);
+  });
+  updateGradPreview();
+}
+function addGradStop(){
+  const sorted=[...gradStops].sort((a,b)=>a.pos-b.pos);
+  // find largest gap
+  let bestPos=0.5,bestGap=0;
+  for(let i=0;i<sorted.length-1;i++){const gap=sorted[i+1].pos-sorted[i].pos;if(gap>bestGap){bestGap=gap;bestPos=(sorted[i].pos+sorted[i+1].pos)/2;}}
+  // interpolate color
+  const col=sampleGrad(bestPos);
+  gradStops.push({pos:bestPos,color:col});
+  renderGradStopUI();draw();
+}
+function updateGradPreview(){
+  const sorted=[...gradStops].sort((a,b)=>a.pos-b.pos);
+  const stops=sorted.map(s=>`${s.color} ${(s.pos*100).toFixed(1)}%`).join(',');
+  $('grad-preview').style.background=`linear-gradient(to right,${stops})`;
+}
+
+// ========== GRADIENT COLOR SAMPLING ==========
+function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return[r,g,b];}
+function rgbToHex(r,g,b){return'#'+[r,g,b].map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');}
+function lerpColor(c1,c2,t){const[r1,g1,b1]=hexToRgb(c1),[r2,g2,b2]=hexToRgb(c2);return rgbToHex(r1+(r2-r1)*t,g1+(g2-g1)*t,b1+(b2-b1)*t);}
+function sampleGrad(t){
+  const smooth=parseFloat($('grad-smooth').value)||1;
+  const repeat=$('grad-repeat').checked;
+  let u=repeat?((t%1+1)%1):Math.max(0,Math.min(1,t));
+  // smoothstep blend
+  if(smooth>0){u=u*u*(3-2*u)*smooth+u*(1-smooth);}
+  const sorted=[...gradStops].sort((a,b)=>a.pos-b.pos);
+  if(sorted.length===0)return'#000';
+  if(u<=sorted[0].pos)return sorted[0].color;
+  if(u>=sorted[sorted.length-1].pos)return sorted[sorted.length-1].color;
+  for(let i=0;i<sorted.length-1;i++){
+    if(u>=sorted[i].pos&&u<=sorted[i+1].pos){
+      const span=sorted[i+1].pos-sorted[i].pos;
+      const local=span===0?0:(u-sorted[i].pos)/span;
+      return lerpColor(sorted[i].color,sorted[i+1].color,local);
+    }
+  }
+  return sorted[sorted.length-1].color;
+}
+
+// t(0..1) for each cell based on axis
+function cellGradT(c,r,colFrac,rowFrac,cellSizeFrac){
+  if(gradAxis==='col')return colFrac;
+  if(gradAxis==='row')return rowFrac;
+  if(gradAxis==='radial'){const dx=colFrac-0.5,dy=rowFrac-0.5;return Math.min(1,Math.sqrt(dx*dx+dy*dy)*Math.SQRT2);}
+  if(gradAxis==='size')return 1-cellSizeFrac; // smaller cell -> higher t
+  if(gradAxis==='diag')return(colFrac+rowFrac)/2;
+  return colFrac;
+}
+
+// ========== SVG COLOR ==========
+function normColor(c){
+  if(!c)return null;c=c.trim().toLowerCase();
+  if(/^#[0-9a-f]{6}$/.test(c))return c;
+  if(/^#[0-9a-f]{3}$/.test(c))return'#'+c[1]+c[1]+c[2]+c[2]+c[3]+c[3];
+  if(c==='none'||c==='transparent')return null;
+  try{const cv=document.createElement('canvas');cv.width=cv.height=1;const ctx=cv.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillStyle=c;const d=ctx.getImageData(0,0,1,1).data;return'#'+[d[0],d[1],d[2]].map(x=>x.toString(16).padStart(2,'0')).join('');}catch(e){return null;}
+}
+function extractSvgColors(doc){
+  const seen=new Map();
+  function add(v){if(!v)return;const vt=v.trim();if(vt==='none'||vt==='transparent'||vt.startsWith('url(')||vt==='currentColor'||vt==='inherit')return;const n=normColor(vt);if(n)seen.set(n,vt);}
+  doc.querySelectorAll('*').forEach(el=>{
+    ['fill','stroke','stop-color','color'].forEach(a=>{const v=el.getAttribute(a);if(v)add(v);});
+    const st=el.getAttribute('style')||'';
+    [...st.matchAll(/(?:fill|stroke|stop-color|color)\s*:\s*([^;}"' ]+)/gi)].forEach(m=>add(m[1]));
+  });
+  return [...seen.entries()];
+}
+function buildSvgColorUI(entries){
+  const list=$('svg-color-list');list.innerHTML='';
+  const area=$('svg-colors-area');
+  if(!entries||!entries.length){area.style.display='none';return;}
+  area.style.display='block';
+  entries.forEach(([norm,orig])=>{
+    const cur=svgColorMap.get(norm)||norm;
+    const item=document.createElement('div');item.className='svg-color-item';
+    const sw=document.createElement('span');sw.className='svg-color-swatch';sw.style.background=norm;sw.title=orig;
+    const lbl=document.createElement('span');lbl.className='svg-color-label';lbl.textContent=orig;
+    const pick=document.createElement('input');pick.type='color';pick.value=cur;
+    pick.oninput=()=>{svgColorMap.set(norm,pick.value);draw();};
+    item.append(sw,lbl,pick);list.appendChild(item);
+  });
+}
+function resetSvgColors(){svgColorMap.clear();if(uploadedSvgDoc)buildSvgColorUI(extractSvgColors(uploadedSvgDoc));draw();}
+function applyColorMap(str){
+  if(!svgColorMap.size)return str;
+  let out=str;
+  svgColorMap.forEach((newC,origNorm)=>{
+    if(newC===origNorm)return;
+    const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    out=out.replace(new RegExp(`((?:fill|stroke|stop-color|color)\\s*=\\s*["'])${esc(origNorm)}(["'])`,'gi'),`$1${newC}$2`);
+    out=out.replace(new RegExp(`((?:fill|stroke|stop-color|color)\\s*:\\s*)${esc(origNorm)}(\\s*[;}"' ])`,'gi'),`$1${newC}$2`);
+  });
+  return out;
+}
+
+// ========== SEQUENCES ==========
+function seqArithmetic(n,d){return Array.from({length:n},(_,i)=>{const dist=Math.abs(i-(n-1)/2)/((n-1)/2||1);const k=Math.round(dist*(n-1)/2);return Math.max(1e-4,1+(Math.ceil(n/2)-1-k)*d);});}
+function seqGeometric(n,r){return Array.from({length:n},(_,i)=>{const dist=Math.abs(i-(n-1)/2)/((n-1)/2||1);const k=Math.round((1-dist)*Math.ceil(n/2));return Math.max(1e-4,Math.pow(r,k));});}
+function seqHarmonic(n,d){return Array.from({length:n},(_,i)=>{const dist=Math.abs(i-(n-1)/2)/((n-1)/2||1);const k=Math.round(dist*Math.ceil(n/2));return Math.max(1e-4,1/Math.max(1e-4,1+k*d));});}
+function seqPower(n,a,en){return Array.from({length:n},(_,i)=>{const dist=Math.abs(i-(n-1)/2)/((n-1)/2||1);const k=Math.round(dist*(n-1));return Math.max(1e-4,Math.pow(1/Math.max(1e-4,a),en*k));});}
+function seqFibonacci(n){const h=Math.ceil(n/2)+2;const f=[1,1];for(let i=2;i<h;i++)f.push(f[i-1]+f[i-2]);return Array.from({length:n},(_,i)=>{const dist=Math.abs(i-(n-1)/2)/((n-1)/2||1);const k=Math.round((1-dist)*(h-3));return Math.max(1e-4,f[Math.min(k,f.length-1)]);});}
+function seqConverge(n,s){return Array.from({length:n},(_,i)=>{const dist=Math.abs(i-(n-1)/2)/((n-1)/2||1);return Math.max(1e-4,s===0?1:Math.pow(1-dist,s));});}
+function norm(a){const s=a.reduce((x,y)=>x+y,0)||1;return a.map(v=>v/s);}
+function applyMaxSize(w,mx){if(mx>=1)return w;let arr=[...w];for(let i=0;i<30;i++){const s=arr.reduce((a,b)=>a+b,0);let ch=false;arr=arr.map(v=>{if(v/s>mx){ch=true;return mx*s;}return v;});arr=norm(arr);if(!ch)break;}return arr;}
+const FN_META={
+  geometric:{ja:{d:'公比rで掛け算的に変化する等比数列。'},en:{d:'Geometric seq. ratio r.'},formula:[{type:'power',base:'r',exp:'k'}]},
+  arithmetic:{ja:{d:'初項から公差dずつ増える等差数列。'},en:{d:'Arithmetic seq. diff d.'},formula:[{type:'lin',s:'a₁+(k-1)d'}]},
+  harmonic:{ja:{d:'調和数列。分母が等差的に増加。'},en:{d:'Harmonic seq.'},formula:[{type:'frac',top:'1',bot:'1+(k-1)d'}]},
+  power:{ja:{d:'(1/a)^(n·k)の指数減衰数列。'},en:{d:'Exponential decay.'},formula:[{type:'power',base:'(1/a)',exp:'nk'}]},
+  fibonacci:{ja:{d:'1, 1, 2, 3, 5, 8, 13 …'},en:{d:'Fibonacci: 1,1,2,3,5,8,13…'},formula:[{type:'recur',s:'Fₖ=Fₖ₋₁+Fₖ₋₂'}]},
+  converge:{ja:{d:'中心ほど大きく端ほど小さいガウシアン分布。'},en:{d:'Gaussian converge.'},formula:[{type:'power',base:'t',exp:'s'}]},
+  custom:{ja:{d:'独自の数式でサイズを制御。t: 0=端, 1=中心'},en:{d:'Custom formula. t: 0=edge, 1=center'},formula:[]},
+};
+function drawFormula(){
+  const fn=$('size-fn').value,meta=FN_META[fn];if(!meta)return;
+  const lng=isEn?'en':'ja';
+  $('fn-desc').textContent=meta[lng]?.d||'';
+  const box=$('fn-desc-box');
+  if(!meta[lng]?.d){box.style.display='none';return;}
+  box.style.display='block';
+  const cv=$('fn-formula-canvas'),W=cv.offsetWidth||240,H=44;
+  cv.width=W*2;cv.height=H*2;cv.style.width=W+'px';cv.style.height=H+'px';
+  const ctx=cv.getContext('2d');ctx.scale(2,2);
+  const bg=getComputedStyle(document.documentElement).getPropertyValue('--bg2').trim()||'#fff';
+  const tc=getComputedStyle(document.documentElement).getPropertyValue('--text1').trim()||'#111';
+  const ac=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#1a73e8';
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  if(!meta.formula||!meta.formula.length)return;
+  const f=meta.formula[0];const cx=W/2,cy=H/2;
+  ctx.textBaseline='middle';
+  if(f.type==='frac'){ctx.fillStyle=ac;ctx.font='bold 12px "Times New Roman",serif';const tw=ctx.measureText(f.top).width,bw=ctx.measureText(f.bot||'').width;const fw=Math.max(tw,bw)+8;ctx.fillText(f.top,cx-tw/2,cy-9);ctx.fillStyle=tc;ctx.fillRect(cx-fw/2,cy-2,fw,1.5);if(f.bot){ctx.fillStyle=ac;ctx.fillText(f.bot,cx-bw/2,cy+9);}}
+  else if(f.type==='power'){ctx.fillStyle=tc;ctx.font='12px "Times New Roman",serif';ctx.fillText('aₖ =',cx-60,cy+2);ctx.fillStyle=ac;ctx.font='bold 16px "Times New Roman",serif';const bw=ctx.measureText(f.base).width;ctx.fillText(f.base,cx-bw/2+4,cy+2);ctx.font='bold 11px "Times New Roman",serif';ctx.fillStyle=tc;ctx.fillText(f.exp,cx+bw/2+4,cy-6);}
+  else if(f.type==='lin'||f.type==='recur'){ctx.fillStyle=ac;ctx.font='bold 13px "Times New Roman",serif';const tw=ctx.measureText(f.s).width;ctx.fillText(f.s,cx-tw/2,cy);}
+}
+function getRawSeq(n,axis){
+  const fn=$('size-fn').value,s=parseFloat($('strength').value);
+  const d=parseFloat($('arith-d').value)||0.5,r=parseFloat($('geo-r').value)||1.618;
+  const hd=parseFloat($('harm-d').value)||1,pa=parseFloat($('pw-a').value)||2,pn=parseFloat($('pw-n').value)||1;
+  let sym;
+  if(fn==='arithmetic')sym=seqArithmetic(n,d);
+  else if(fn==='geometric')sym=seqGeometric(n,r);
+  else if(fn==='harmonic')sym=seqHarmonic(n,hd);
+  else if(fn==='power')sym=seqPower(n,pa,pn);
+  else if(fn==='fibonacci')sym=seqFibonacci(n);
+  else if(fn==='converge')sym=seqConverge(n,s);
+  else if(fn==='custom'){try{const f=new Function('t','return '+(axis==='col'?$('cex-w').value:$('cex-h').value));sym=Array.from({length:n},(_,i)=>{const dist=Math.abs(i-(n-1)/2)/((n-1)/2||1);return Math.max(1e-4,f(1-dist));});}catch(e){sym=Array(n).fill(1);}}
+  else sym=Array(n).fill(1);
+  if(fn!=='converge'&&fn!=='custom'&&s!==1&&s>=0){const mx=Math.max(...sym);sym=sym.map(v=>Math.max(1e-4,Math.pow(v/mx,s)*mx));}
+  return sym;
+}
+function makeWeights(n,axis){
+  const sym=norm(getRawSeq(n,axis));
+  const half=Math.ceil(n/2);const hv=sym.slice(0,half);
+  const monoD=norm(Array.from({length:n},(_,i)=>{const t=i/(n-1||1);const idx=Math.round((1-t)*(half-1));return hv[Math.min(idx,hv.length-1)];}));
+  const monoA=norm([...monoD].reverse());
+  const flatN=Array(n).fill(1/n);
+  const useAll=activeDir.has('all'),isCol=axis==='col';
+  const useStart=isCol?activeDir.has('left'):activeDir.has('top');
+  const useEnd=isCol?activeDir.has('right'):activeDir.has('bottom');
+  if(!useAll&&!useStart&&!useEnd)return flatN;
+  let acc=Array(n).fill(0),cnt=0;
+  if(useAll){acc=acc.map((v,i)=>v+sym[i]);cnt++;}
+  if(useStart){acc=acc.map((v,i)=>v+monoD[i]);cnt++;}
+  if(useEnd){acc=acc.map((v,i)=>v+monoA[i]);cnt++;}
+  return applyMaxSize(norm(acc.map(v=>v/cnt)),parseFloat($('max-size').value));
+}
+function getGridSeqCounts(base,axis){
+  const on=$(axis==='col'?'cols-seq-on':'rows-seq-on').checked;if(!on)return null;
+  const fn=$(axis==='col'?'cols-seq-fn':'rows-seq-fn').value;
+  const p=parseFloat($(axis==='col'?'cols-seq-p':'rows-seq-p').value)||1;
+  const sym=$(axis==='col'?'cols-seq-sym':'rows-seq-sym').checked;
+  const other=axis==='col'?parseInt($('rows').value):parseInt($('cols').value);
+  return Array.from({length:other},(_,i)=>{
+    let t;if(sym){const dist=Math.abs(i-(other-1)/2)/((other-1)/2||1);t=1-dist;}else t=1-i/(other-1||1);
+    let mult;
+    if(fn==='arithmetic')mult=Math.max(0.1,1+(t-0.5)*p*2);
+    else if(fn==='geometric')mult=Math.max(0.05,Math.pow(p,t-0.5)*2-Math.pow(p,-0.5)*2+1);
+    else mult=Math.max(0.1,Math.pow(1.618,t*p-p/2)+0.3);
+    return Math.max(1,Math.round(base*mult));
+  });
+}
+
+// ========== SVG CELL ==========
+function buildSvgCell(x,y,w,h,f2){
+  if(!uploadedSvgDoc)return'';
+  const svgEl=uploadedSvgDoc.documentElement;
+  const vb=svgEl.getAttribute('viewBox');
+  let vx=0,vy=0,vw=100,vh=100;
+  if(vb){const p=vb.trim().split(/[\s,]+/).map(Number);if(p.length>=4)[vx,vy,vw,vh]=p;}
+  else{vw=parseFloat(svgEl.getAttribute('width')||'100')||100;vh=parseFloat(svgEl.getAttribute('height')||'100')||100;}
+  const sx=w/vw,sy=h/vh;
+  const ser=new XMLSerializer();
+  let inner=Array.from(svgEl.childNodes).map(nd=>{try{return ser.serializeToString(nd);}catch(e){return'';}}).join('');
+  inner=applyColorMap(inner);
+  return`<g transform="translate(${f2(x)},${f2(y)}) scale(${f2(sx)},${f2(sy)}) translate(${f2(-vx)},${f2(-vy)})">${inner}</g>`;
+}
+
+// ========== BUILD CONTENT ==========
+function buildContent(){
+  const W=CVW,H=CVH,baseCols=parseInt($('cols').value),baseRows=parseInt($('rows').value);
+  const repX=parseInt($('rep-x').value),repY=parseInt($('rep-y').value);
+  const bg=$('bg-color').value;
+  const shape=$('shape').value,char=$('char').value||'0';
+  const aspectMode=$('aspect-mode').value;
+  const padX=parseFloat($('pad-x').value),padY=parseFloat($('pad-y').value);
+  const offX=parseFloat($('off-x').value),offY=parseFloat($('off-y').value);
+  const font=$('font-family').value,bold=$('font-bold').checked;
+  const colSeq=getGridSeqCounts(baseCols,'col');
+  const rowSeq=getGridSeqCounts(baseRows,'row');
+  const solidFg=$('fg-color').value;
+  const f2=v=>v.toFixed(3);
+
+  // Compute base weights for gradient sizing axis
+  const baseColW=makeWeights(baseCols,'col');
+  const baseRowH=makeWeights(baseRows,'row');
+  const maxCellSizeFrac=Math.max(...baseColW)*Math.max(...baseRowH);
+
+  let els=`<rect width="${W}" height="${H}" fill="${bg}"/>`;
+
+  function doCell(x,y,cw,ch,colIdx,rowIdx,totalCols,totalRows){
+    let dw=cw*(1-padX*2),dh=ch*(1-padY*2);
+    if(aspectMode==='fit-min'){const m=Math.min(dw,dh);dw=m;dh=m;}
+    if(aspectMode==='fit-max'){const m=Math.max(dw,dh);dw=m;dh=m;}
+    if(dw<0.2||dh<0.2)return;
+    const cx=x+cw/2+cw*offX,cy=y+ch/2+ch*offY;
+    // determine fg color
+    let fg=solidFg;
+    if(fgMode==='gradient'){
+      const colFrac=totalCols>1?colIdx/(totalCols-1):0.5;
+      const rowFrac=totalRows>1?rowIdx/(totalRows-1):0.5;
+      // cell size fraction: normalized area relative to max
+      const cellArea=(cw/W)*(ch/H);
+      const sizeFrac=Math.min(1,cellArea/maxCellSizeFrac);
+      const t=cellGradT(colIdx,rowIdx,colFrac,rowFrac,sizeFrac);
+      fg=sampleGrad(t);
+    }
+    if(shape==='ellipse'){els+=`<ellipse cx="${f2(cx)}" cy="${f2(cy)}" rx="${f2(dw/2)}" ry="${f2(dh/2)}" fill="${fg}"/>`;return;}
+    if(shape==='rect'){els+=`<rect x="${f2(cx-dw/2)}" y="${f2(cy-dh/2)}" width="${f2(dw)}" height="${f2(dh)}" rx="${f2(Math.min(dw,dh)*0.07)}" fill="${fg}"/>`;return;}
+    if(shape==='diamond'){els+=`<polygon points="${f2(cx)},${f2(cy-dh/2)} ${f2(cx+dw/2)},${f2(cy)} ${f2(cx)},${f2(cy+dh/2)} ${f2(cx-dw/2)},${f2(cy)}" fill="${fg}"/>`;return;}
+    if(shape==='image'&&uploadedDataUrl){els+=`<image href="${uploadedDataUrl}" x="${f2(cx-dw/2)}" y="${f2(cy-dh/2)}" width="${f2(dw)}" height="${f2(dh)}" preserveAspectRatio="none"${$('invert').checked?' style="filter:invert(1)"':''}/>`;return;}
+    if(shape==='svg'&&uploadedSvgDoc){els+=buildSvgCell(cx-dw/2,cy-dh/2,dw,dh,f2);return;}
+    els+=`<text x="${f2(cx)}" y="${f2(cy)}" text-anchor="middle" dominant-baseline="central" font-family="${font}" font-weight="${bold?'900':'400'}" font-size="${f2(dh*0.9)}" textLength="${f2(dw*0.94)}" lengthAdjust="spacingAndGlyphs" fill="${fg}">${char}</text>`;
+  }
+
+  for(let ty=0;ty<repY;ty++) for(let tx=0;tx<repX;tx++){
+    const ox=tx*(W/repX),oy=ty*(H/repY),tileW=W/repX,tileH=H/repY;
+    if(!colSeq&&!rowSeq){
+      const cw=makeWeights(baseCols,'col').map(w=>w*tileW);
+      const rh=makeWeights(baseRows,'row').map(h=>h*tileH);
+      let ry=0;for(let r=0;r<baseRows;r++){let rx=0;for(let c=0;c<baseCols;c++){doCell(ox+rx,oy+ry,cw[c],rh[r],c,r,baseCols,baseRows);rx+=cw[c];}ry+=rh[r];}
+    }else if(colSeq&&!rowSeq){
+      const rh=makeWeights(baseRows,'row').map(h=>h*tileH);
+      let ry=0;for(let r=0;r<baseRows;r++){const nC=colSeq[r]||baseCols;const cw=makeWeights(nC,'col').map(w=>w*tileW);let rx=0;for(let c=0;c<nC;c++){doCell(ox+rx,oy+ry,cw[c],rh[r],c,r,nC,baseRows);rx+=cw[c];}ry+=rh[r];}
+    }else if(!colSeq&&rowSeq){
+      const cw=makeWeights(baseCols,'col').map(w=>w*tileW);
+      let rx=0;for(let c=0;c<baseCols;c++){const nR=rowSeq[c]||baseRows;const rh=makeWeights(nR,'row').map(h=>h*tileH);let ry=0;for(let r=0;r<nR;r++){doCell(ox+rx,oy+ry,cw[c],rh[r],c,r,baseCols,nR);ry+=rh[r];}rx+=cw[c];}
+    }else{
+      const baseRH=makeWeights(baseRows,'row').map(h=>h*tileH);
+      let ry=0;for(let r=0;r<baseRows;r++){const nC=colSeq[r]||baseCols;const cw=makeWeights(nC,'col').map(w=>w*tileW);let rx=0;for(let c=0;c<nC;c++){doCell(ox+rx,oy+ry,cw[c],baseRH[r],c,r,nC,baseRows);rx+=cw[c];}ry+=baseRH[r];}
+    }
+  }
+  return els;
+}
+
+function draw(){$('preview').innerHTML=buildContent();updateCanvasInfo();drawFormula();}
+
+function getSVGString(){return`<?xml version="1.0" encoding="UTF-8"?>\n<svg width="${CVW}" height="${CVH}" viewBox="0 0 ${CVW} ${CVH}" xmlns="http://www.w3.org/2000/svg">${buildContent()}</svg>`;}
+function downloadSVG(){const blob=new Blob([getSVGString()],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='pattern.svg';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},1500);}
+function downloadPNG(){
+  const sc=parseFloat($('png-scale').value)||1,outW=Math.round(CVW*sc),outH=Math.round(CVH*sc);
+  const blob=new Blob([getSVGString()],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(blob);const img=new Image();
+  img.onload=()=>{const cv=document.createElement('canvas');cv.width=outW;cv.height=outH;cv.getContext('2d').drawImage(img,0,0,outW,outH);cv.toBlob(pb=>{const pu=URL.createObjectURL(pb);const a=document.createElement('a');a.href=pu;a.download='pattern.png';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(pu);URL.revokeObjectURL(url);document.body.removeChild(a);},1500);},'image/png');};
+  img.onerror=()=>{URL.revokeObjectURL(url);const rd=new FileReader();rd.onload=ev=>{const i2=new Image();i2.onload=()=>{const cv=document.createElement('canvas');cv.width=outW;cv.height=outH;cv.getContext('2d').drawImage(i2,0,0,outW,outH);const a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download='pattern.png';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);};i2.src=ev.target.result;};rd.readAsDataURL(blob);};
+  img.src=url;
+}
+
+function onFnChange(){
+  const fn=$('size-fn').value;
+  ['arithmetic','geometric','harmonic','power','custom'].forEach(k=>$('p-'+k).style.display=fn===k?'block':'none');
+  drawFormula();draw();
+}
+function onShapeChange(){
+  const sh=$('shape').value;
+  $('char-area').style.display=sh==='char'?'block':'none';
+  $('upload-area').style.display=(sh==='image'||sh==='svg')?'block':'none';
+  // gradient makes sense for basic shapes and char
+  $('fg-section').style.display=(sh==='image')?'none':'block';
+  $('invert-row').style.display=sh==='image'?'flex':'none';
+  if(sh==='svg'){
+    if(uploadedSvgDoc)buildSvgColorUI(extractSvgColors(uploadedSvgDoc));
+    else $('svg-colors-area').style.display='none';
+    // SVG: hide gradient (SVG has its own colors), show svg color panel
+    $('fg-section').style.display='none';
+  } else {
+    $('svg-colors-area').style.display='none';
+  }
+  draw();
+}
+
+function parseSVG(text){
+  const clean=text.replace(/^\uFEFF/,'').replace(/<\?xml[^?]*\?>/gi,'').trim();
+  const parser=new DOMParser();let doc=parser.parseFromString(clean,'image/svg+xml');
+  if(doc.querySelector('parsererror')){const d2=parser.parseFromString(clean,'text/html');const el=d2.querySelector('svg');if(el){const d3=parser.parseFromString(el.outerHTML,'image/svg+xml');if(!d3.querySelector('parsererror'))return d3;}return null;}
+  return doc.querySelector('svg')?doc:null;
+}
+function onFileChange(input){
+  const file=input.files[0];if(!file)return;
+  const isSvg=file.type==='image/svg+xml'||file.name.toLowerCase().endsWith('.svg');
+  $('drop-label').textContent=file.name;$('drop-zone').classList.add('has-file');
+  if(isSvg){
+    const rd=new FileReader();rd.onload=e=>{
+      const doc=parseSVG(e.target.result);
+      const dbg=$('svg-debug');dbg.style.display='block';
+      if(doc){
+        uploadedSvgDoc=doc;uploadedDataUrl=null;svgColorMap.clear();
+        const colors=extractSvgColors(doc);
+        dbg.textContent=`✓ viewBox="${doc.documentElement.getAttribute('viewBox')||'—'}" 色数:${colors.length}`;
+        // Always build color UI immediately after parse
+        buildSvgColorUI(colors);
+      }else{uploadedSvgDoc=null;dbg.textContent='✗ SVGパース失敗。';$('svg-colors-area').style.display='none';}
+      draw();
+    };rd.readAsText(file);
+  }else{
+    const rd=new FileReader();rd.onload=e=>{uploadedDataUrl=e.target.result;uploadedSvgDoc=null;$('svg-colors-area').style.display='none';draw();};rd.readAsDataURL(file);
+  }
+}
+setTimeout(()=>{
+  const dz=$('drop-zone');if(!dz)return;
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.opacity='.6'});
+  dz.addEventListener('dragleave',()=>{dz.style.opacity=''});
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.style.opacity='';const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);$('file-input').files=dt.files;onFileChange($('file-input'));}});
+},50);
+$('png-scale').addEventListener('input',updateCanvasInfo);
+$('png-scale-n').addEventListener('change',updateCanvasInfo);
+
+// INIT
+renderGradStopUI();
+applyLang();
+applyPreviewScale();
+draw();
+</script>
+</body></html>
